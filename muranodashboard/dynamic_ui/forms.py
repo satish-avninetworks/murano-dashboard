@@ -51,7 +51,8 @@ TYPES.update({
     'network': fields.NetworkChoiceField,
     'text': (fields.CharField, forms.Textarea),
     'choice': fields.ChoiceField,
-    'floatingip': fields.FloatingIpBooleanField
+    'floatingip': fields.FloatingIpBooleanField,
+    'cloud': fields.CloudChoiceField
 })
 
 # From Horizon project/instances/workflow/create_instance

@@ -363,5 +363,5 @@ def get_cloud_list(request):
     LOG.debug('CloudCredentials::List')
     cloud_list = api.muranoclient(request).cloud_credential.list()
     LOG.debug('CloudCredentials::List {0}'.format(cloud_list))
-    return (((i.id, None), _("%s : %s"%(i.cloud_type, i.name))) for i in
-            cloud_list)
+    return [((i.id, None), _("%s : %s" % (i.cloud_type, i.name))) for i in
+            cloud_list]

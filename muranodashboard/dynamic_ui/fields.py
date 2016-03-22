@@ -34,7 +34,9 @@ from oslo_log import log as logging
 import yaql
 
 from muranoclient.common import exceptions as muranoclient_exc
+from muranoclient.v1.client import cloud_credentials
 from muranodashboard.api import packages as pkg_api
+from muranodashboard.api import muranoclient
 from muranodashboard.common import net
 from muranodashboard.environments import api as env_api
 
@@ -129,6 +131,17 @@ def get_murano_images(request):
                 image.murano_property = murano_metadata
                 murano_images.append(image)
     return murano_images
+
+
+def get_clouds(request):
+    clouds = []
+    try:
+        clouds = muranoclient(request).cloud_credential.list()
+    except Exception:
+        LOG.error("Error to request cloud list ")
+        exceptions.handle(request, _("Unable to retrieve cloud list."))
+    return [((i.id, None), _("%s : %s"%(i.cloud_type, i.name))) for i in
+            clouds]
 
 
 class RawProperty(object):
@@ -350,6 +363,18 @@ def _disable_non_ready(data):
     else:
         return {'disabled': 'disabled'}
 
+class CloudChoiceField(ChoiceField):
+    widget = hz_forms.SelectWidget(transform=_get_title,
+                                   transform_html_attrs=_disable_non_ready)
+
+    def __init__(self, *args, **kwargs):
+        #self.image_type = kwargs.pop('cloud', None)
+        super(CloudChoiceField, self).__init__(*args, **kwargs)
+
+    @with_request
+    def update(self, request, **kwargs):
+        clouds = get_clouds(request)
+        self.choices = clouds
 
 class ImageChoiceField(ChoiceField):
     widget = hz_forms.SelectWidget(transform=_get_title,
