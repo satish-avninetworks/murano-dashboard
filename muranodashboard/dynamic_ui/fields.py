@@ -34,7 +34,6 @@ from oslo_log import log as logging
 import yaql
 
 from muranoclient.common import exceptions as muranoclient_exc
-from muranoclient.v1.client import cloud_credentials
 from muranodashboard.api import packages as pkg_api
 from muranodashboard.api import muranoclient
 from muranodashboard.common import net
@@ -136,7 +135,7 @@ def get_murano_images(request):
 def get_clouds(request):
     clouds = []
     try:
-        clouds = muranoclient(request).cloud_credential.list()
+        clouds = muranoclient(request).cloud_credentials.list()
     except Exception:
         LOG.error("Error to request cloud list ")
         exceptions.handle(request, _("Unable to retrieve cloud list."))

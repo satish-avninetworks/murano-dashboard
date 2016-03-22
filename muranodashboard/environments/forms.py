@@ -65,7 +65,7 @@ class CreateEnvironmentForm(horizon_forms.SelfHandlingForm):
         self.fields['net_config'].help_text = help_text
 
         cloud_choices = api.get_cloud_list(request)
-        cloud_choices.insert(0, (None, None), _('default (OpenStack)'))
+        cloud_choices.insert(0, ((None, None), _('default (OpenStack)')))
 
         self.fields['cloud_config'].choices = cloud_choices
         self.fields['cloud_config'].help_text = CLOUD_CRED_HELP
