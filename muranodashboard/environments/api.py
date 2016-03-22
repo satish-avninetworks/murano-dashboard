@@ -168,6 +168,8 @@ def environment_create(request, parameters):
     body = {'name': parameters['name']}
     if 'defaultNetworks' in parameters:
         body['defaultNetworks'] = parameters['defaultNetworks']
+    if 'defaultCloud' in parameters:
+        body['defaultCloud'] = parameters['defaultCloud']
     env = api.muranoclient(request).environments.create(body)
     LOG.debug('Environment::Create {0}'.format(env))
     return env
@@ -355,3 +357,11 @@ def get_deployment_descr(request, environment_id, deployment_id):
 def load_environment_data(request, environment_id):
     environment = environment_get(request, environment_id)
     return topology.render_d3_data(request, environment)
+
+
+def get_cloud_list(request):
+    LOG.debug('CloudCredentials::List')
+    cloud_list = api.muranoclient(request).cloud_credential.list()
+    LOG.debug('CloudCredentials::List {0}'.format(cloud_list))
+    return (((i.id, None), _("%s : %s"%(i.cloud_type, i.name))) for i in
+            cloud_list)

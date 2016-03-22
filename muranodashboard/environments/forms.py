@@ -31,6 +31,7 @@ ENV_NAME_HELP_TEXT = _("Environment names must contain only "
                        "alphanumeric or '_-.' characters "
                        "and must start with alpha")
 
+CLOUD_CRED_HELP = _("Select the default cloud")
 
 class CreateEnvironmentForm(horizon_forms.SelfHandlingForm):
     name = forms.CharField(label="Environment Name",
@@ -39,10 +40,16 @@ class CreateEnvironmentForm(horizon_forms.SelfHandlingForm):
                            help_text=ENV_NAME_HELP_TEXT,
                            max_length=255)
 
+    cloud_config = forms.ChoiceField(
+        label=_("Environment Default Cloud"),
+        required=True
+    )
+
     net_config = forms.ChoiceField(
         label=_("Environment Default Network"),
         required=True
     )
+
 
     def __init__(self, request, *args, **kwargs):
         super(CreateEnvironmentForm, self).__init__(request, *args, **kwargs)
@@ -57,11 +64,23 @@ class CreateEnvironmentForm(horizon_forms.SelfHandlingForm):
         self.fields['net_config'].choices = net_choices
         self.fields['net_config'].help_text = help_text
 
+        cloud_choices = api.get_cloud_list(request)
+        cloud_choices.insert(0, (None, None), _('default (OpenStack)'))
+
+        self.fields['cloud_config'].choices = cloud_choices
+        self.fields['cloud_config'].help_text = CLOUD_CRED_HELP
+
     def handle(self, request, data):
         try:
+            cloud_config = ast.literal_eval(data.pop('cloud_config'))
+            if cloud_config and cloud_config[0]:
+                #TODO(Govardhan) update cloud_to_environment link
+                data.update({"defaultCloud": cloud_config[0]})
+
             net_config = ast.literal_eval(data.pop('net_config'))
             if net_config[0] is not None:
                 data.update(net.generate_join_existing_net(net_config))
+
             env = api.environment_create(request, data)
             request.session['env_id'] = env.id
             messages.success(request,
