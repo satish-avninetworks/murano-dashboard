@@ -139,7 +139,7 @@ def get_clouds(request):
     except Exception:
         LOG.error("Error to request cloud list ")
         exceptions.handle(request, _("Unable to retrieve cloud list."))
-    return [((i.id, None), _("%s : %s"%(i.cloud_type, i.name))) for i in
+    return [(i.id, _("%s : %s"%(i.cloud_type, i.name))) for i in
             clouds]
 
 
@@ -362,6 +362,7 @@ def _disable_non_ready(data):
     else:
         return {'disabled': 'disabled'}
 
+
 class CloudChoiceField(ChoiceField):
     widget = hz_forms.SelectWidget(transform=_get_title,
                                    transform_html_attrs=_disable_non_ready)
@@ -374,6 +375,7 @@ class CloudChoiceField(ChoiceField):
     def update(self, request, **kwargs):
         clouds = get_clouds(request)
         self.choices = clouds
+
 
 class ImageChoiceField(ChoiceField):
     widget = hz_forms.SelectWidget(transform=_get_title,
