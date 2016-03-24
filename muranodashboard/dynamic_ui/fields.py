@@ -368,7 +368,7 @@ class CloudChoiceField(ChoiceField):
                                    transform_html_attrs=_disable_non_ready)
 
     def __init__(self, *args, **kwargs):
-        #self.image_type = kwargs.pop('cloud', None)
+        self.cloud_type = kwargs.pop('cloud_type', None)
         super(CloudChoiceField, self).__init__(*args, **kwargs)
 
     @with_request
